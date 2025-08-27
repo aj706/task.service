@@ -8,6 +8,8 @@ import (
     "task-service/internal/model"
     "task-service/internal/repository"
     "task-service/internal/service"
+
+    "github.com/go-chi/chi/v5"
 )
 
 type TaskHandler struct {
@@ -16,12 +18,6 @@ type TaskHandler struct {
 
 func NewTaskHandler(s *service.TaskService) *TaskHandler {
     return &TaskHandler{svc: s}
-}
-
-func (h *TaskHandler) Register(r interface{ MethodFunc(string, ...func(http.ResponseWriter, *http.Request)) }) {
-    // We accept a minimal interface so chi.Router or others work.
-    r.MethodFunc("POST", "/tasks", h.create)
-    r.MethodFunc("GET", "/tasks", h.list)
 }
 
 func (h *TaskHandler) create(w http.ResponseWriter, r *http.Request) {
