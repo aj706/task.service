@@ -11,6 +11,11 @@ ENV GOPROXY=direct \
     GOSUMDB=off \
     GIT_SSL_NO_VERIFY=1
 
+ENV GOPROXY=direct \
+    GOINSECURE=github.com,*.github.com,go.mongodb.org \
+    GOSUMDB=off \
+    GIT_SSL_NO_VERIFY=1
+
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
