@@ -9,7 +9,7 @@ import (
 type TaskStatus string
 
 const (
-    StatusPending    TaskStatus = "pending"
+    StatusTodo       TaskStatus = "todo"
     StatusInProgress TaskStatus = "in_progress"
     StatusDone       TaskStatus = "done"
 )
