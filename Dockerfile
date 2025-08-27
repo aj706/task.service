@@ -1,28 +1,18 @@
 # ─── build stage ──────────────────────────────────────────────
 FROM golang:1.22-alpine AS builder
 
-# Install git so Go can fetch modules
+# (Optional) switch APK mirrors to HTTP to avoid TLS issues, then install git
 RUN sed -i 's/https/http/g' /etc/apk/repositories && \
     apk add --no-cache git
 
-# Bypass corporate proxy TLS issues for Go module downloads
-ENV GOPROXY=direct \
-    GOINSECURE=github.com,*.github.com \
-    GOSUMDB=off \
-    GIT_SSL_NO_VERIFY=1
-
-ENV GOPROXY=direct \
-    GOINSECURE=github.com,*.github.com,go.mongodb.org \
-    GOSUMDB=off \
-    GIT_SSL_NO_VERIFY=1
-
 WORKDIR /src
-COPY go.mod go.sum ./
-RUN go mod download
 
+# Copy entire project, including the vendor directory you created on host
 COPY . .
+
+# Build using the local vendor folder – NO network traffic inside container
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -o /bin/task-service ./cmd/taskservice
+    go build -mod=vendor -o /bin/task-service ./cmd/taskservice
 
 # ─── runtime stage ────────────────────────────────────────────
 FROM gcr.io/distroless/static
