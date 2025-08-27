@@ -12,11 +12,11 @@ COPY . .
 
 # Build using the local vendor folder – NO network traffic inside container
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -mod=vendor -o /bin/task-service ./cmd/taskservice
+    go build -mod=vendor -o task-service ./cmd/server
 
 # ─── runtime stage ────────────────────────────────────────────
 FROM gcr.io/distroless/static
-COPY --from=builder /bin/task-service /task-service
+COPY --from=builder /src/task-service /task-service
 USER 10001
 EXPOSE 8080
 ENTRYPOINT ["/task-service"]
