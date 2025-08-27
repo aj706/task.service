@@ -24,7 +24,7 @@ func (s *TaskService) Create(ctx context.Context, t *model.Task) error {
     t.CreatedAt = now
     t.UpdatedAt = now
     if t.Status == "" {
-        t.Status = model.StatusPending
+        t.Status = model.StatusTodo
     }
     return s.repo.Create(ctx, t)
 }
