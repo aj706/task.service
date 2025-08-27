@@ -20,6 +20,12 @@ func NewTaskHandler(s *service.TaskService) *TaskHandler {
     return &TaskHandler{svc: s}
 }
 
+// Register wires task endpoints into provided router
+func (h *TaskHandler) Register(r chi.Router) {
+    r.Post("/tasks", h.create)
+    r.Get("/tasks", h.list)
+}
+
 func (h *TaskHandler) create(w http.ResponseWriter, r *http.Request) {
     var payload model.Task
     if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
