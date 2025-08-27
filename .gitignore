@@ -1,0 +1,14 @@
+# Binaries
+/task-service
+*.out
+
+# IDE / Editor settings
+.vscode/
+.idea/
+
+# macOS metadata
+.DS_Store
+
+# Coverage reports
+*.cov
+coverage.*
