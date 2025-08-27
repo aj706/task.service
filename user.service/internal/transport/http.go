@@ -9,9 +9,19 @@ import (
 )
 
 type Server struct { router *chi.Mux }
+
 func New(h *handler.UserHandler) *Server {
-    r := chi.NewRouter(); r.Use(middleware.Logger, middleware.Recoverer)
+    r := chi.NewRouter()
+    r.Use(middleware.Logger, middleware.Recoverer)
+
+    // health endpoint
+    r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+        w.WriteHeader(http.StatusOK)
+        w.Write([]byte("ok"))
+    })
+
     r.Route("/api/v1", func(rt chi.Router) { h.Register(rt) })
     return &Server{router: r}
 }
+
 func (s *Server) Start(addr string) { log.Fatal(http.ListenAndServe(addr, s.router)) }
