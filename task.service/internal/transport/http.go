@@ -19,6 +19,12 @@ func NewServer(th *handler.TaskHandler) *Server {
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
 
+    // Health check endpoint
+    r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+        w.WriteHeader(http.StatusOK)
+        w.Write([]byte("ok"))
+    })
+
     r.Route("/api/v1", func(api chi.Router) {
         th.Register(api)
     })
