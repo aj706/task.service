@@ -66,6 +66,16 @@ func (s *TaskService) Delete(ctx context.Context, id primitive.ObjectID) error {
     return s.repo.Delete(ctx, id)
 }
 
+func (s *TaskService) List(ctx context.Context, filter repository.TaskFilter, pg repository.Pagination) ([]*model.Task, int64, error) {
+    if pg.Limit <= 0 || pg.Limit > 100 {
+        pg.Limit = 20
+    }
+    if pg.Offset < 0 {
+        pg.Offset = 0
+    }
+    return s.repo.List(ctx, filter, pg)
+}
+
 // userExists checks user-service for the given ID
 func (s *TaskService) userExists(ctx context.Context, id primitive.ObjectID) bool {
     url := s.userSvcBase + "/api/v1/users/" + id.Hex()
