@@ -1,11 +1,14 @@
 # ─── build stage ──────────────────────────────────────────────
 FROM golang:1.22-alpine AS builder
-WORKDIR /src
 
-# Disable the default module proxy that’s causing TLS errors
+# Install git so go can download modules
+RUN apk add --no-cache git
+
+# Bypass corporate proxy TLS issue (optional – keep if you still get x509 errors)
 ENV GOPROXY=direct \
     GOSUMDB=off
 
+WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 
