@@ -1,14 +1,15 @@
 # ─── build stage ──────────────────────────────────────────────
 FROM golang:1.22-alpine AS builder
 
-# Switch APK mirrors from https → http to avoid TLS MITM problems,
-# then install git so 'go mod download' works.
+# Install git so Go can fetch modules
 RUN sed -i 's/https/http/g' /etc/apk/repositories && \
     apk add --no-cache git
 
-# Bypass Go module proxy cert issues (optional)
+# Bypass corporate proxy TLS issues for Go module downloads
 ENV GOPROXY=direct \
-    GOSUMDB=off
+    GOINSECURE=github.com,*.github.com \
+    GOSUMDB=off \
+    GIT_SSL_NO_VERIFY=1
 
 WORKDIR /src
 COPY go.mod go.sum ./
@@ -17,3 +18,10 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -o /bin/task-service ./cmd/taskservice
+
+# ─── runtime stage ────────────────────────────────────────────
+FROM gcr.io/distroless/static
+COPY --from=builder /bin/task-service /task-service
+USER 10001
+EXPOSE 8080
+ENTRYPOINT ["/task-service"]
