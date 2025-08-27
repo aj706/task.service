@@ -2,12 +2,24 @@ version: "3.9"
 
 services:
   task-service:
-    build: .
+    build:
+      context: ./task.service
     restart: unless-stopped
     environment:
-      # MongoDB Atlas connection string (password’s @ encoded as %40)
       MONGO_URI: mongodb+srv://animeshj7:ucc%40Aj0706@bluebeast007.awdyy0c.mongodb.net/?retryWrites=true&w=majority&appName=bluebeast007
-      DB_NAME: tasks         # database name to use in Atlas
-      PORT: "8080"           # HTTP listen port inside container
+      DB_NAME: tasks
+      PORT: "8080"
+      USER_SERVICE_BASE: http://user-service:8081
     ports:
-      - "8080:8080"          # expose service on localhost:8080
+      - "8080:8080"
+
+  user-service:
+    build:
+      context: ./user.service
+    restart: unless-stopped
+    environment:
+      MONGO_URI: mongodb+srv://animeshj7:ucc%40Aj0706@bluebeast007.awdyy0c.mongodb.net/?retryWrites=true&w=majority&appName=bluebeast007
+      DB_NAME: users
+      PORT: "8081"
+    ports:
+      - "8081:8081"
